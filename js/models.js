@@ -73,15 +73,26 @@ class StoryList {
      * Returns the new Story instance
      */
 
-    async addStory(user, newStory) {
+    static async addStory(title, author, url) {
+        /* {token: token,
+        * story: {
+        * author: name,
+        * title: title,
+        * url: url }*/
         let request = {
             token: currentUser.loginToken,
-            story: newStory
+            story: {
+                title,
+                author,
+                url
+            }
         }
+
+        console.log(request)
         try {
             const response = await axios.post(`${BASE_URL}/stories`, request);
             return new Story(response.data.story);
-        } catch (err){
+        } catch (err) {
             console.warn('Failed to create a new story!')
             return false;
         }
