@@ -138,6 +138,26 @@ class User {
      * - name: the user's full name
      */
 
+    async addFavorite(storyId) {
+        try {
+            const response = await axios.post(`${BASE_URL}/users/${this.username}/favorites/${storyId}`, {token: this.loginToken})
+            currentUser = await User.loginViaStoredCredentials(this.loginToken, this.username)
+        } catch (e) {
+            console.log('Failed to add favorite due to', e)
+        }
+
+    }
+
+    async removeFavorite(storyId) {
+        try {
+            const response = await axios.delete(`${BASE_URL}/users/${this.username}/favorites/${storyId}`, {data: {token: this.loginToken}})
+            currentUser = await User.loginViaStoredCredentials(this.loginToken, this.username)
+        } catch (e) {
+            console.log('Failed to delete favorite due to', e)
+        }
+
+    }
+
     static async signup(username, password, name) {
         const response = await axios({
             url: `${BASE_URL}/signup`,

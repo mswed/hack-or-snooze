@@ -114,3 +114,8 @@ function updateUIOnUserLogin() {
 
   updateNavOnLogin();
 }
+
+
+/******************************************************************************
+ * User favorite/unfavorite
+ */
