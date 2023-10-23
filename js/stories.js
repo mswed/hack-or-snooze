@@ -9,7 +9,7 @@ async function getAndShowStoriesOnStart() {
     storyList = await StoryList.getStories();
     $storiesLoadingMsg.remove();
 
-    putStoriesOnPage();
+    putStoriesOnPage('all');
 }
 
 /**
@@ -44,15 +44,26 @@ function generateStoryMarkup(story) {
 
 /** Gets list of stories from server, generates their HTML, and puts on page. */
 
-function putStoriesOnPage() {
-    console.debug("putStoriesOnPage");
+function putStoriesOnPage(type) {
+    console.debug('Type is', type);
+    let stories = $allStoriesList;
+    let list = storyList.stories;
+    if (type === 'all') {
+        console.debug("putStoriesOnPage - ALL");
+    } else {
+        console.debug("putStoriesOnPage - FAVORITES");
+        stories = $favoriteStoriesList;
+        console.debug('>>>', stories)
+        list = currentUser.favorites;
+        console.debug('>>>', list)
+    }
 
-    $allStoriesList.empty();
+    stories.empty();
 
     // loop through all of our stories and generate HTML for them
-    for (let story of storyList.stories) {
+    for (let story of list) {
         const $story = generateStoryMarkup(story);
-        $allStoriesList.append($story);
+        stories.append($story);
     }
 
     // Add a listener on the favorite icon
@@ -75,7 +86,7 @@ function putStoriesOnPage() {
     })
 
 
-    $allStoriesList.show();
+    stories.show();
 }
 
 async function submitStory(evt) {

@@ -9,7 +9,7 @@
 function navAllStories(evt) {
   console.debug("navAllStories", evt);
   hidePageComponents();
-  putStoriesOnPage();
+  putStoriesOnPage('all');
 }
 
 $body.on("click", "#nav-all", navAllStories);
@@ -43,3 +43,11 @@ function navSubmitClick(evt) {
 }
 
 $navSubmit.on('click', navSubmitClick)
+
+function navFavoriteStories(evt) {
+  console.debug("navFavoriteStories", evt);
+  hidePageComponents();
+  putStoriesOnPage('favorites');
+}
+
+$navFavorites.on('click', navFavoriteStories)
