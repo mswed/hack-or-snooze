@@ -55,14 +55,21 @@ function putStoriesOnPage() {
         $allStoriesList.append($story);
     }
 
+    // Add a listener on the favorite icon
     $('i').on('click', async function(ev) {
-        const story = ev.target.parentElement.id
+        // Find the story we clicked on in the story list (so we can get a story object)
+        const story = storyList.stories.find(s => s.storyId === ev.target.parentElement.id)
 
         if (ev.target.className === 'fa-regular fa-star') {
+            // This is not a favorite add it to the favorite list on the backend and front end
             await currentUser.addFavorite(story)
+            currentUser.favorites.push(story)
             ev.target.className = 'fa-solid fa-star'
         } else {
+            // This was a favorite remove it from the favorite list on the backend and front end
             await currentUser.removeFavorite(story)
+            const index = storyList.stories.indexOf(story)
+            currentUser.favorites.splice(index, 1)
             ev.target.className = 'fa-regular fa-star';
         }
     })
