@@ -5,9 +5,17 @@
 }
 
 .stories-list > li {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  width: 100%;
   color: gray;
   font-size: 0.8rem;
   margin: 10px 0;
+}
+
+.fav-icon {
+  margin-right: 1%;
 }
 
 #stories-loading-msg {
@@ -22,8 +30,8 @@
 .story-link {
   color: black;
   font-size: 0.85rem;
-  font-weight: normal;
-  margin: 18px 0;
+  font-weight: bold;
+  margin-right: 1%;
 }
 
 .story-link:hover {
@@ -31,9 +39,55 @@
 }
 
 .story-author {
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: darkgreen;
   margin-left: 2em;
 }
 
 .story-user {
   display: block;
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: orange;
+  margin-left: 2em;
 }
+
+.story-hostname {
+  font-weight: bold;
+}
+.delete-button {
+  float: right;
+  background-color: #8E3B46;
+  color: white;
+  border-radius: 10%;
+  border: #8E3B46 solid 1px;
+  margin-bottom: 10px;
+}
+
+.delete-button > i {
+  pointer-events: none;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: baseline;
+  width: 100%;
+}
+
+.bottom-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  flex-basis: 100%;
+  flex: 1;
+}
+

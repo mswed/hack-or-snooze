@@ -88,12 +88,28 @@ class StoryList {
             }
         }
 
-        console.log(request)
         try {
             const response = await axios.post(`${BASE_URL}/stories`, request);
             return new Story(response.data.story);
         } catch (err) {
             console.warn('Failed to create a new story!')
+            return false;
+        }
+
+    }
+
+    static async removeStory(storyId) {
+        /* {token: token}*/
+        let request = {data: {token: currentUser.loginToken}}
+
+        try {
+            const response = await axios.delete(`${BASE_URL}/stories/${storyId}`, request);
+        } catch (err) {
+            console.log('COUGHT AN ERROR!', err)
+            if(err.response.status === 405) {
+                alert('You are not allowed to delete other people stories!')
+            }
+            console.warn('Failed to delete the story!')
             return false;
         }
 
