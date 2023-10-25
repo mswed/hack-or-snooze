@@ -86,46 +86,49 @@ function putStoriesOnPage(type) {
     }
 
     // Add a listener on the favorite icon
-    $('.fav-icon').on('click', async function (ev) {
-        // Find the story we clicked on in the story list (so we can get a story object)
-        const storyId = getParentElement(ev.target, 3).id
-        const story = storyList.stories.find(s => s.storyId === storyId)
+    $('.fav-icon').on('click',(ev) => toggleFavorite(ev))
 
-        if (ev.target.className === 'fa-regular fa-star fav-icon') {
-            // This is not a favorite add it to the favorite list on the backend and front end
-            await currentUser.addFavorite(story)
-            currentUser.favorites.push(story)
-            ev.target.classList.replace('fa-regular', 'fa-solid')
-        } else {
-            // This was a favorite remove it from the favorite list on the backend and front end
-            await currentUser.removeFavorite(story)
-            const index = storyList.stories.indexOf(story)
-            currentUser.favorites.splice(index, 1)
-            ev.target.classList.replace('fa-solid', 'fa-regular');
-        }
-    })
-
-    $('.delete-button').on('click', async function (ev) {
-        // Grab the element
-        const storyElement = getParentElement(ev.target, 3)
-
-        // Find the story and remove it from the backend and the front end
-        const story = storyList.stories.find(s => s.storyId === storyElement.id)
-        const success = await StoryList.removeStory(story.storyId)
-        if (success) {
-            const index = storyList.stories.indexOf(story)
-            storyList.stories.splice(index, 1)
-
-            // Remove the story from the page
-            $(storyElement).remove()
-        }
-
-    })
+    $('.delete-button').on('click', (ev) => {deleteStory(ev)})
 
 
     stories.show();
 }
 
+async function toggleFavorite(ev){
+    console.debug('toggleFavorite')
+    // Find the story we clicked on in the story list (so we can get a story object)
+    const storyId = getParentElement(ev.target, 3).id
+    const story = storyList.stories.find(s => s.storyId === storyId)
+
+    if (ev.target.className === 'fa-regular fa-star fav-icon') {
+        // This is not a favorite add it to the favorite list on the backend and front end
+        await currentUser.addFavorite(story)
+        currentUser.favorites.push(story)
+        ev.target.classList.replace('fa-regular', 'fa-solid')
+    } else {
+        // This was a favorite remove it from the favorite list on the backend and front end
+        await currentUser.removeFavorite(story)
+        const index = storyList.stories.indexOf(story)
+        currentUser.favorites.splice(index, 1)
+        ev.target.classList.replace('fa-solid', 'fa-regular');
+    }
+}
+
+async function deleteStory(ev) {
+    // Grab the element
+    const storyElement = getParentElement(ev.target, 3)
+
+    // Find the story and remove it from the backend and the front end
+    const story = storyList.stories.find(s => s.storyId === storyElement.id)
+    const success = await StoryList.removeStory(story.storyId)
+    if (success) {
+        const index = storyList.stories.indexOf(story)
+        storyList.stories.splice(index, 1)
+
+        // Remove the story from the page
+        $(storyElement).remove()
+    }
+}
 async function submitStory(evt) {
     evt.preventDefault();
     await StoryList.addStory($("#submit-title").val(), $("#submit-author").val(), $("#submit-url").val())
@@ -137,12 +140,9 @@ async function submitStory(evt) {
 $submitForm.on('submit', submitStory);
 
 function getParentElement(element, level) {
-    console.log('checking element', element)
     let parent = element.parentElement
-    console.log('direct parent is', parent)
     for (let i = 0; i < level - 1; i++) {
         parent = parent.parentElement
     }
-    console.log('final parent is', parent)
     return parent
 }

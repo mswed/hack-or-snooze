@@ -90,7 +90,9 @@ class StoryList {
 
         try {
             const response = await axios.post(`${BASE_URL}/stories`, request);
-            return new Story(response.data.story);
+            const newStory = new Story(response.data.story);
+            currentUser.ownStories.push(newStory);
+            return newStory
         } catch (err) {
             console.warn('Failed to create a new story!')
             return false;
