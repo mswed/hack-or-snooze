@@ -38,22 +38,23 @@ function updateNavOnLogin() {
 function navSubmitClick(evt) {
   console.debug("navSubmitClick", evt);
   hidePageComponents();
-  $submitForm.show()
-  $allStoriesList.show()
+  // $submitForm.show();
+  $submitForm.slideToggle(1000);
+  $allStoriesList.show();
 }
 
 $navSubmit.on('click', navSubmitClick)
 
-function navFavoriteStories(evt) {
-  console.debug("navFavoriteStories", evt);
+function navFavoriteStoriesClick(evt) {
+  console.debug("navFavoriteStoriesClick", evt);
   hidePageComponents();
   putStoriesOnPage('favorites');
 }
 
-$navFavorites.on('click', navFavoriteStories)
+$navFavorites.on('click', navFavoriteStoriesClick)
 
 function navUserStories(evt) {
-  console.debug("navFavoriteStories", evt);
+  console.debug("navFavoriteStoriesClick", evt);
   hidePageComponents();
   putStoriesOnPage('user');
 }

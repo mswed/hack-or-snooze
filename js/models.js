@@ -108,7 +108,6 @@ class StoryList {
             const response = await axios.delete(`${BASE_URL}/stories/${storyId}`, request);
             return true;
         } catch (err) {
-            console.log('COUGHT AN ERROR!', err)
             if(err.response.status === 403) {
                 alert('You are not allowed to delete other people stories!')
             }
@@ -203,24 +202,39 @@ class User {
      */
 
     static async login(username, password) {
-        const response = await axios({
-            url: `${BASE_URL}/login`,
-            method: "POST",
-            data: {user: {username, password}},
-        });
 
-        let {user} = response.data;
+        try {
+            const response = await axios({
+                url: `${BASE_URL}/login`,
+                method: "POST",
+                data: {user: {username, password}},
+            });
 
-        return new User(
-            {
-                username: user.username,
-                name: user.name,
-                createdAt: user.createdAt,
-                favorites: user.favorites,
-                ownStories: user.stories
-            },
-            response.data.token
-        );
+            let {user} = response.data;
+
+            return new User(
+                {
+                    username: user.username,
+                    name: user.name,
+                    createdAt: user.createdAt,
+                    favorites: user.favorites,
+                    ownStories: user.stories
+                },
+                response.data.token
+            );
+        } catch (err) {
+            if(err.response.status === 404) {
+                alert("We don't have such a user name. Try again")
+            } else if (err.response.status === 401) {
+                alert("Ooops, wrong password. Try again")
+            } else {
+                console.debug(err)
+            }
+
+            return false;
+        }
+
+
     }
 
     /** When we already have credentials (token & username) for a user,

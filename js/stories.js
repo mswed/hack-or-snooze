@@ -23,11 +23,15 @@ function generateStoryMarkup(story, type) {
     // console.debug("generateStoryMarkup", story);
 
     const hostName = story.getHostName();
-
-    const isFavorite = currentUser.favorites.find(s => s.storyId === story.storyId);
     let fav = '<i class="fa-regular fa-star fav-icon"></i>';
-    if (isFavorite) {
-        fav = '<i class="fa-solid fa-star fav-icon"></i>'
+
+    try {
+        const isFavorite = currentUser.favorites.find(s => s.storyId === story.storyId);
+        if (isFavorite) {
+            fav = '<i class="fa-solid fa-star fav-icon"></i>'
+        }
+    } catch (e) {
+        console.warn('User not logged in (probably)')
     }
 
     let deleteBtn = '';
@@ -132,9 +136,11 @@ async function deleteStory(ev) {
 async function submitStory(evt) {
     evt.preventDefault();
     await StoryList.addStory($("#submit-title").val(), $("#submit-author").val(), $("#submit-url").val())
-    $submitForm.hide()
+    $submitForm.slideUp(1000)
     $submitForm.trigger("reset");
+
     await getAndShowStoriesOnStart()
+
 }
 
 $submitForm.on('submit', submitStory);

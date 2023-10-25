@@ -22,9 +22,10 @@ async function login(evt) {
   currentUser = await User.login(username, password);
 
   $loginForm.trigger("reset");
-
-  saveUserCredentialsInLocalStorage();
-  updateUIOnUserLogin();
+  if (currentUser) {
+    saveUserCredentialsInLocalStorage();
+    updateUIOnUserLogin();
+  }
 }
 
 $loginForm.on("submit", login);
