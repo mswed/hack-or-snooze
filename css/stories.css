@@ -61,11 +61,12 @@
   font-weight: bold;
 }
 .delete-button {
-  float: right;
-  background-color: #8E3B46;
-  color: white;
-  border-radius: 10%;
-  border: #8E3B46 solid 1px;
+  /*float: right;*/
+  /*background-color: #8E3B46;*/
+  /*color: white;*/
+  /*border-radius: 10%;*/
+  /*border: #8E3B46 solid 1px;*/
+  border: none;
   margin-bottom: 10px;
   cursor: pointer;
 }

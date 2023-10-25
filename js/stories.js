@@ -19,7 +19,7 @@ async function getAndShowStoriesOnStart() {
  * Returns the markup for the story.
  */
 
-function generateStoryMarkup(story) {
+function generateStoryMarkup(story, type) {
     // console.debug("generateStoryMarkup", story);
 
     const hostName = story.getHostName();
@@ -30,10 +30,16 @@ function generateStoryMarkup(story) {
         fav = '<i class="fa-solid fa-star fav-icon"></i>'
     }
 
+    let deleteBtn = '';
+    if (type === 'user') {
+        deleteBtn = '<button class="delete-button"><i class="fa-regular fa-trash-can"></i></i></button>'
+    }
+
     return $(`
     <li id="${story.storyId}">
     <div class="list-item">
     <div class="row">
+    ${deleteBtn}
             ${fav}
             <a href="${story.url}" target="a_blank" class="story-link">
                 ${story.title}
@@ -45,7 +51,7 @@ function generateStoryMarkup(story) {
         </div>
         <div class="bottom-row">
             <small class="story-user">posted by ${story.username}</small>
-            <button class="delete-button"><i class="fa-solid fa-xmark"></i></button>
+            
         </div>
         <hr>
 </div>
@@ -58,21 +64,24 @@ function generateStoryMarkup(story) {
 /** Gets list of stories from server, generates their HTML, and puts on page. */
 
 function putStoriesOnPage(type) {
+    console.log('TYPE', type)
     let stories = $allStoriesList;
     let list = storyList.stories;
     if (type === 'all') {
         console.debug("putStoriesOnPage - ALL");
-    } else {
+    } else if (type === 'favorites'){
         console.debug("putStoriesOnPage - FAVORITES");
-        stories = $favoriteStoriesList;
         list = currentUser.favorites;
+    } else {
+        console.debug("putStoriesOnPage - USER");
+        list = currentUser.ownStories;
     }
 
     stories.empty();
 
     // loop through all of our stories and generate HTML for them
     for (let story of list) {
-        const $story = generateStoryMarkup(story);
+        const $story = generateStoryMarkup(story, type);
         stories.append($story);
     }
 
