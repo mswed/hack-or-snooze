@@ -5,6 +5,10 @@
 }
 
 .stories-list > li {
+
+}
+
+.list-item {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -31,7 +35,7 @@
   color: black;
   font-size: 0.85rem;
   font-weight: bold;
-  margin-right: 1%;
+  margin-right: 0.5%;
 }
 
 .story-link:hover {
@@ -63,6 +67,7 @@
   border-radius: 10%;
   border: #8E3B46 solid 1px;
   margin-bottom: 10px;
+  cursor: pointer;
 }
 
 .delete-button > i {
@@ -91,3 +96,7 @@
   flex: 1;
 }
 
+hr {
+  margin-left: 0;
+  margin-right: 0;
+}

@@ -32,7 +32,8 @@ function generateStoryMarkup(story) {
 
     return $(`
     <li id="${story.storyId}">
-        <div class="row">
+    <div class="list-item">
+    <div class="row">
             ${fav}
             <a href="${story.url}" target="a_blank" class="story-link">
                 ${story.title}
@@ -47,29 +48,11 @@ function generateStoryMarkup(story) {
             <button class="delete-button"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <hr>
+</div>
+        
     </li>
  
     `);
-//     return $(`
-//       <li id="${story.storyId}">
-//       <div class="row">
-//       <div class="column">
-//       ${fav}
-//
-// </div>
-// </div>
-// <!--      <button class="delete-button" ><i class="fa-solid fa-xmark"></i></button>-->
-//
-//
-//         <a href="${story.url}" target="a_blank" class="story-link">
-//           ${story.title}
-//         </a>
-// <!--        <small class="story-hostname">(${hostName})</small>-->
-// <!--        <small class="story-author">by ${story.author}</small>-->
-// <!--        <small class="story-user">posted by ${story.username}</small>-->
-// <!--        <hr>-->
-//       </li>
-//     `);
 }
 
 /** Gets list of stories from server, generates their HTML, and puts on page. */
@@ -96,7 +79,8 @@ function putStoriesOnPage(type) {
     // Add a listener on the favorite icon
     $('.fav-icon').on('click', async function (ev) {
         // Find the story we clicked on in the story list (so we can get a story object)
-        const story = storyList.stories.find(s => s.storyId === ev.target.parentElement.id)
+        const storyId = getParentElement(ev.target, 3).id
+        const story = storyList.stories.find(s => s.storyId === storyId)
 
         if (ev.target.className === 'fa-regular fa-star fav-icon') {
             // This is not a favorite add it to the favorite list on the backend and front end
@@ -114,16 +98,19 @@ function putStoriesOnPage(type) {
 
     $('.delete-button').on('click', async function (ev) {
         // Grab the element
-        const storyElement = ev.target.parentElement
+        const storyElement = getParentElement(ev.target, 3)
 
         // Find the story and remove it from the backend and the front end
         const story = storyList.stories.find(s => s.storyId === storyElement.id)
-        await StoryList.removeStory(story.storyId)
-        const index = storyList.stories.indexOf(story)
-        storyList.stories.splice(index, 1)
+        const success = await StoryList.removeStory(story.storyId)
+        if (success) {
+            const index = storyList.stories.indexOf(story)
+            storyList.stories.splice(index, 1)
 
-        // Remove the story from the page
-        $(storyElement).remove()
+            // Remove the story from the page
+            $(storyElement).remove()
+        }
+
     })
 
 
@@ -140,3 +127,13 @@ async function submitStory(evt) {
 
 $submitForm.on('submit', submitStory);
 
+function getParentElement(element, level) {
+    console.log('checking element', element)
+    let parent = element.parentElement
+    console.log('direct parent is', parent)
+    for (let i = 0; i < level - 1; i++) {
+        parent = parent.parentElement
+    }
+    console.log('final parent is', parent)
+    return parent
+}

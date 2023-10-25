@@ -24,8 +24,8 @@ class Story {
     /** Parses hostname out of URL and returns it. */
 
     getHostName() {
-        // UNIMPLEMENTED: complete this function!
-        return "hostname.com";
+        const url = new URL(this.url)
+        return url.hostname;
     }
 }
 
@@ -104,9 +104,10 @@ class StoryList {
 
         try {
             const response = await axios.delete(`${BASE_URL}/stories/${storyId}`, request);
+            return true;
         } catch (err) {
             console.log('COUGHT AN ERROR!', err)
-            if(err.response.status === 405) {
+            if(err.response.status === 403) {
                 alert('You are not allowed to delete other people stories!')
             }
             console.warn('Failed to delete the story!')
