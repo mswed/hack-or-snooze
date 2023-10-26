@@ -116,6 +116,23 @@ class StoryList {
         }
 
     }
+
+    static async updateStory(story)   {
+        let request = {data: {token: currentUser.loginToken,
+            story: story}}
+
+        try {
+            const response = await axios.patch(`${BASE_URL}/stories/${story.storyId}`, request);
+            return true;
+        } catch (err) {
+            console.log(err)
+            if(err.response.status === 403) {
+                alert('You are not allowed to delete other people stories!')
+            }
+            console.warn('Failed to update the story!')
+            return false;
+        }
+    }
 }
 
 
@@ -160,7 +177,7 @@ class User {
         try {
             const response = await axios.post(`${BASE_URL}/users/${this.username}/favorites/${story.storyId}`, {token: this.loginToken})
         } catch (e) {
-            console.log('Failed to add favorite due to', e)
+            console.warn('Failed to add favorite due to', e)
         }
 
     }
@@ -169,7 +186,7 @@ class User {
         try {
             const response = await axios.delete(`${BASE_URL}/users/${this.username}/favorites/${story.storyId}`, {data: {token: this.loginToken}})
         } catch (e) {
-            console.log('Failed to delete favorite due to', e)
+            console.warn('Failed to delete favorite due to', e)
         }
 
     }

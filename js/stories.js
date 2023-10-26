@@ -3,6 +3,9 @@
 // This is the global list of the stories, an instance of StoryList
 let storyList;
 
+// This is a global containing the story being edited
+let editedStory;
+
 /** Get and show stories when site first loads. */
 
 async function getAndShowStoriesOnStart() {
@@ -35,8 +38,10 @@ function generateStoryMarkup(story, type) {
     }
 
     let deleteBtn = '';
+    let editBtn = ''
     if (type === 'user') {
-        deleteBtn = '<button class="delete-button"><i class="fa-regular fa-trash-can"></i></i></button>'
+        deleteBtn = '<button class="delete-button"><i class="fa-regular fa-trash-can"></i></button>'
+        editBtn = '<button class="edit-button"><i class="fa-solid fa-pencil"></i></button>'
     }
 
     return $(`
@@ -44,6 +49,7 @@ function generateStoryMarkup(story, type) {
     <div class="list-item">
     <div class="row">
     ${deleteBtn}
+    ${editBtn}
             ${fav}
             <a href="${story.url}" target="a_blank" class="story-link">
                 ${story.title}
@@ -68,7 +74,6 @@ function generateStoryMarkup(story, type) {
 /** Gets list of stories from server, generates their HTML, and puts on page. */
 
 function putStoriesOnPage(type) {
-    console.log('TYPE', type)
     let stories = $allStoriesList;
     let list = storyList.stories;
     if (type === 'all') {
@@ -94,6 +99,8 @@ function putStoriesOnPage(type) {
 
     $('.delete-button').on('click', (ev) => {deleteStory(ev)})
 
+    $('.edit-button').on('click', (ev) => {editStory(ev)})
+
 
     stories.show();
 }
@@ -102,7 +109,9 @@ async function toggleFavorite(ev){
     console.debug('toggleFavorite')
     // Find the story we clicked on in the story list (so we can get a story object)
     const storyId = getParentElement(ev.target, 3).id
-    const story = storyList.stories.find(s => s.storyId === storyId)
+    // We can add a favorite from two places (all stories and favorites view) so we need to find the object in the
+    // correct list
+    const story = findStoryObject(storyId)
 
     if (ev.target.className === 'fa-regular fa-star fav-icon') {
         // This is not a favorite add it to the favorite list on the backend and front end
@@ -112,34 +121,75 @@ async function toggleFavorite(ev){
     } else {
         // This was a favorite remove it from the favorite list on the backend and front end
         await currentUser.removeFavorite(story)
-        const index = storyList.stories.indexOf(story)
+
+        // Remove from local list
+        let index = currentUser.favorites.indexOf(story)
         currentUser.favorites.splice(index, 1)
         ev.target.classList.replace('fa-solid', 'fa-regular');
     }
 }
 
+function findStoryObject(storyId) {
+    // Search both possible lists of stories and return the story index
+    const story = storyList.stories.find(s => s.storyId === storyId)
+    const favoriteStory = currentUser.favorites.find(s => s.storyId === storyId)
+    for (let foundStory of [story, favoriteStory]) {
+        if (foundStory !== 'undefined') {
+            return foundStory
+        }
+    }
+}
 async function deleteStory(ev) {
     // Grab the element
     const storyElement = getParentElement(ev.target, 3)
 
     // Find the story and remove it from the backend and the front end
-    const story = storyList.stories.find(s => s.storyId === storyElement.id)
+    const story = currentUser.ownStories.find(s => s.storyId === storyElement.id)
     const success = await StoryList.removeStory(story.storyId)
     if (success) {
-        const index = storyList.stories.indexOf(story)
-        storyList.stories.splice(index, 1)
+        const index = currentUser.ownStories.indexOf(story)
+        currentUser.ownStories.splice(index, 1)
 
         // Remove the story from the page
         $(storyElement).remove()
     }
 }
+
+async function editStory(ev) {
+    // Grab the element
+    const storyElement = getParentElement(ev.target, 3)
+    editedStory = currentUser.ownStories.find(s => s.storyId === storyElement.id)
+    $("#submit-title").val(editedStory.title);
+    $("#submit-author").val(editedStory.author);
+    $("#submit-url").val(editedStory.url);
+    $('#submit-button').text('update');
+    $('h4').text('Update Story');
+    // Show the submit form
+    $submitForm.slideToggle()
+}
+
 async function submitStory(evt) {
     evt.preventDefault();
-    await StoryList.addStory($("#submit-title").val(), $("#submit-author").val(), $("#submit-url").val())
+    if ($('#submit-button').text() === 'update') {
+        // This is an update operation get updated values from the UI
+        editedStory.title = $("#submit-title").val();
+        editedStory.author = $("#submit-author").val();
+        editedStory.url = $("#submit-url").val();
+        // Update the backend
+        await StoryList.updateStory(editedStory)
+        $('#submit-button').text('submit');
+        $('h4').text('New Story');
+        putStoriesOnPage('user');
+    } else {
+        // This is a new story
+        await StoryList.addStory($("#submit-title").val(), $("#submit-author").val(), $("#submit-url").val())
+        await getAndShowStoriesOnStart()
+    }
+
     $submitForm.slideUp(1000)
     $submitForm.trigger("reset");
 
-    await getAndShowStoriesOnStart()
+
 
 }
 
