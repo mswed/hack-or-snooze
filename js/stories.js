@@ -134,6 +134,7 @@ async function editStory(ev) {
 }
 
 async function submitStory(evt) {
+    console.debug('submitStory')
     evt.preventDefault();
     if ($('#submit-button').text() === 'update') {
         // This is an update operation get updated values from the UI
