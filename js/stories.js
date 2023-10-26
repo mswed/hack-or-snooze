@@ -23,8 +23,6 @@ async function getAndShowStoriesOnStart() {
  */
 
 function generateStoryMarkup(story, type) {
-    // console.debug("generateStoryMarkup", story);
-
     const hostName = story.getHostName();
     let fav = '<i class="fa-regular fa-star fav-icon"></i>';
 
@@ -105,40 +103,7 @@ function putStoriesOnPage(type) {
     stories.show();
 }
 
-async function toggleFavorite(ev){
-    console.debug('toggleFavorite')
-    // Find the story we clicked on in the story list (so we can get a story object)
-    const storyId = getParentElement(ev.target, 3).id
-    // We can add a favorite from two places (all stories and favorites view) so we need to find the object in the
-    // correct list
-    const story = findStoryObject(storyId)
 
-    if (ev.target.className === 'fa-regular fa-star fav-icon') {
-        // This is not a favorite add it to the favorite list on the backend and front end
-        await currentUser.addFavorite(story)
-        currentUser.favorites.push(story)
-        ev.target.classList.replace('fa-regular', 'fa-solid')
-    } else {
-        // This was a favorite remove it from the favorite list on the backend and front end
-        await currentUser.removeFavorite(story)
-
-        // Remove from local list
-        let index = currentUser.favorites.indexOf(story)
-        currentUser.favorites.splice(index, 1)
-        ev.target.classList.replace('fa-solid', 'fa-regular');
-    }
-}
-
-function findStoryObject(storyId) {
-    // Search both possible lists of stories and return the story index
-    const story = storyList.stories.find(s => s.storyId === storyId)
-    const favoriteStory = currentUser.favorites.find(s => s.storyId === storyId)
-    for (let foundStory of [story, favoriteStory]) {
-        if (foundStory !== 'undefined') {
-            return foundStory
-        }
-    }
-}
 async function deleteStory(ev) {
     // Grab the element
     const storyElement = getParentElement(ev.target, 3)
@@ -163,7 +128,7 @@ async function editStory(ev) {
     $("#submit-author").val(editedStory.author);
     $("#submit-url").val(editedStory.url);
     $('#submit-button').text('update');
-    $('h4').text('Update Story');
+    $('#story-label').text('Update Story');
     // Show the submit form
     $submitForm.slideToggle()
 }
@@ -178,7 +143,7 @@ async function submitStory(evt) {
         // Update the backend
         await StoryList.updateStory(editedStory)
         $('#submit-button').text('submit');
-        $('h4').text('New Story');
+        $('#story-label').text('New Story');
         putStoriesOnPage('user');
     } else {
         // This is a new story

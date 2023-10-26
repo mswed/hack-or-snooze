@@ -191,25 +191,67 @@ class User {
 
     }
 
+    async updateUser(name, password){
+        let user = {};
+        if (name !== '') {
+            user['name'] = name;
+        }
+        if (password !== '') {
+            user['password'] = password.toString()
+        }
+
+        if ('name' in user || 'password' in user) {
+            try {
+                let request = {token: currentUser.loginToken,
+                        user: user}
+                const response = await axios.patch(`${BASE_URL}/users/${this.username}`, request)
+                user = response.data.user
+
+                return new User(
+                    {
+                        username: user.username,
+                        name: user.name,
+                        createdAt: user.createdAt,
+                        favorites: user.favorites,
+                        ownStories: user.stories
+                    },
+                    response.data.token
+                );
+            } catch(err) {
+                console.debug(err)
+            }
+
+        }
+
+    }
+
     static async signup(username, password, name) {
-        const response = await axios({
-            url: `${BASE_URL}/signup`,
-            method: "POST",
-            data: {user: {username, password, name}},
-        });
+        try {
+            const response = await axios({
+                url: `${BASE_URL}/signup`,
+                method: "POST",
+                data: {user: {username, password, name}},
+            });
 
-        let {user} = response.data
+            let {user} = response.data
 
-        return new User(
-            {
-                username: user.username,
-                name: user.name,
-                createdAt: user.createdAt,
-                favorites: user.favorites,
-                ownStories: user.stories
-            },
-            response.data.token
-        );
+            return new User(
+                {
+                    username: user.username,
+                    name: user.name,
+                    createdAt: user.createdAt,
+                    favorites: user.favorites,
+                    ownStories: user.stories
+                },
+                response.data.token
+            );
+        } catch (err) {
+            if (err.response.status === 409) {
+                alert('User name is already taken, pick a different one!')
+            }
+            return false;
+        }
+
     }
 
     /** Login in user with API, make User instance & return it.

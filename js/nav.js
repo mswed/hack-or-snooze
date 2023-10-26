@@ -53,10 +53,17 @@ function navFavoriteStoriesClick(evt) {
 
 $navFavorites.on('click', navFavoriteStoriesClick)
 
-function navUserStories(evt) {
+function navUserStoriesClick(evt) {
   console.debug("navFavoriteStoriesClick", evt);
   hidePageComponents();
   putStoriesOnPage('user');
 }
 
-$navUserStories.on('click', navUserStories)
+$navUserStories.on('click', navUserStoriesClick)
+
+function navUserProfileClick(evt) {
+  console.debug("navUserProfileClick", evt);
+  $profileForm.slideToggle()
+}
+
+$navUserProfile.on('click', navUserProfileClick)
